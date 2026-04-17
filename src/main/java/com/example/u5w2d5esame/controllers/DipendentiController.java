@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,12 +48,12 @@ public class DipendentiController {
     }
 
     @GetMapping("/{id}")
-    public Dipendente getDipendenteById(@PathVariable UUID id) {
+    public Dipendente getDipendenteById(@PathVariable("id") UUID id) {
         return this.dipendentiService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Dipendente findByIdAndUpdate(@PathVariable UUID id, @RequestBody @Validated DipendenteDTO body, BindingResult validationResult) {
+    public Dipendente findByIdAndUpdate(@PathVariable("id") UUID id, @RequestBody @Validated DipendenteDTO body, BindingResult validationResult) {
         if (validationResult.hasErrors()) {
             List<String> errors = validationResult.getFieldErrors().stream()
                     .map(error -> error.getDefaultMessage())
@@ -65,7 +66,12 @@ public class DipendentiController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void findByIdAndDelete(@PathVariable UUID id) {
+    public void findByIdAndDelete(@PathVariable("id") UUID id) {
         this.dipendentiService.findByIdAndDelete(id);
+    }
+
+    @PatchMapping("/{id}/avatar")
+    public void uploadAvatar(@RequestParam("avatar") MultipartFile file, @PathVariable("id") UUID id) {
+        this.dipendentiService.avatarUpload(file, id);
     }
 }
